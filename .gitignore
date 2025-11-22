@@ -1,0 +1,19 @@
+.env
+
+.venv/
+
+# Arquivos de log e banco
+*.log
+*.sqlite3
+*.db
+*.pkl
+
+# Dados temporários
+*.csv
+*.tsv
+*.json
+*.xml
+
+# Editor/IDE
+.vscode/
+.idea/

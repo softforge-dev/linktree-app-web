@@ -1,0 +1,24 @@
+services:
+  linktree:
+    image: docker.ajvale.com.br/linktree:v2.0.0
+    container_name: linktree
+    labels:
+      - "traefik.enable=true"
+
+      # Router HTTPS
+      - "traefik.http.routers.linktree.rule=Host(`${LINKTREE_DOMAIN}`)"
+      - "traefik.http.routers.linktree.entrypoints=websecure"
+      - "traefik.http.routers.linktree.tls.certresolver=myresolver"
+
+
+    networks:
+      - web
+
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+
+networks:
+  web:
+    external: true
