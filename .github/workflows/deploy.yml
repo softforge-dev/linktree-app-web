@@ -7,9 +7,11 @@ on:
 jobs:
   call-reusable:
     uses: softforge-dev/devops-pipelines/.github/workflows/deploy-docker.yml@main
+    
     with:
       deploy_path: "/opt/linktree"
-      ssh_user: ${{ secrets.SSH_USER }}
-      ssh_host: ${{ secrets.SSH_HOST }}
+
     secrets:
       SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
