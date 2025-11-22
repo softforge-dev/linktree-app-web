@@ -1,17 +1,37 @@
-name: Deploy Linktree
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
+name: 🚀 Deploy via Docker Compose
 
 jobs:
-  call-reusable:
-    uses: softforge-dev/devops-pipelines/.github/workflows/deploy-docker.yml@main
-    
-    with:
-      deploy_path: "/opt/linktree"
+  deploy:
+    runs-on: ubuntu-latest
 
-    secrets:
-      SSH_KEY: ${{ secrets.SSH_KEY }}
-      SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_HOST: ${{ secrets.SSH_HOST }}
+    steps:
+      - name: 📦 Obtendo código
+        uses: actions/checkout@v3
+
+      - name: 🐳 Enviando arquivos para a VPS e subindo containers
+        uses: cross-the-world/ssh-pipeline@master
+        env:
+          WELCOME: "ssh pipeline"
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          user: ${{ secrets.SERVER_USER }}
+          pass: ${{ secrets.SERVER_PASS }}
+          port: 22
+          connect_timeout: 10s
+          script: |
+            cd /srv/app || exit 1
+
+            echo "🔄 Atualizando arquivos do projeto..."
+            git pull origin main
+
+            echo "🐳 Subindo containers..."
+            docker compose pull
+            docker compose up -d --remove-orphans
+
+            echo "🧹 Limpando imagens antigas..."
+            docker image prune -af
