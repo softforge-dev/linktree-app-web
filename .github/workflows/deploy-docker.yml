@@ -10,32 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Obtendo código
-        uses: actions/checkout@v3
 
-      - name: 🐳 Enviando arquivos para a VPS e subindo containers
-        uses: cross-the-world/ssh-pipeline@master
-        env:
-          WELCOME: "ssh pipeline"
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          user: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          connect_timeout: 10s
-          script: |
-            echo "👉 Criando diretório destino"
-            mkdir -p /var/www/app/docker
+    - name: Deploy
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: github
+        key: ${{ secrets.SERVER_KEY }}
+        script: |
+          echo "ola"
 
-            echo "👉 Removendo conteúdo antigo"
-            rm -rf /var/www/app/docker/*
-
-            echo "👉 Enviando pasta docker/"
-            upload "./docker/*" "/var/www/app/docker/"
-
-            echo "👉 Subindo containers"
-            cd /var/www/app/docker
-            docker compose down || true
-            docker compose up -d --build
-
-            echo "✅ Deploy finalizado!"
