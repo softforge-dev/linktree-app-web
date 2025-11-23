@@ -11,12 +11,32 @@ jobs:
 
     steps:
 
-    - name: Deploy
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: root
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          echo "ola"
+    # - name: Deploy
+    #   uses: appleboy/ssh-action@v1.0.3
+    #   with:
+    #     host: ${{ secrets.SSH_HOST }}
+    #     username: root
+    #     key: ${{ secrets.SSH_KEY }}
+    #     script: |
+    #       echo "ola"
+          
+      - name: "Baixar o código"
+        uses: actions/checkout@v4
 
+      - name: "Copiar arquivos para VPS"
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "ajvale.com.br"
+          username: "root"
+          key: ${{ secrets.SSH_KEY }}
+          source: "."
+          target: "/docker"
+
+      - name: "Build da aplicação"
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: "ajvale.com.br"
+          username: "root"
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "ola"
