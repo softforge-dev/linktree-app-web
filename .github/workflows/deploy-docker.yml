@@ -26,7 +26,7 @@ jobs:
       - name: "Copiar arquivos para VPS"
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: "ajvale.com.br"
+          host: "46.202.146.5"
           username: "root"
           key: ${{ secrets.SSH_KEY }}
           source: "."
@@ -35,7 +35,7 @@ jobs:
       - name: "Build da aplicação"
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: "ajvale.com.br"
+          host: "46.202.146.5"
           username: "root"
           key: ${{ secrets.SSH_KEY }}
           script: |
