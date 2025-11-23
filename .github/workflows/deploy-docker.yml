@@ -1,34 +1,41 @@
+name: Deploy Docker Compose
+
 on:
   push:
     branches:
       - main
-
-name: 🚀 Deploy via Docker Compose
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Checkout
+      - name: 📦 Obtendo código
         uses: actions/checkout@v3
 
-      - name: 🚀 Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: 🐳 Enviando arquivos para a VPS e subindo containers
+        uses: cross-the-world/ssh-pipeline@master
+        env:
+          WELCOME: "ssh pipeline"
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          user: ${{ secrets.SERVER_USER }}
+          pass: ${{ secrets.SERVER_PASS }}
           port: 22
+          connect_timeout: 10s
           script: |
-            cd /srv/app || exit 1
+            echo "👉 Criando diretório destino"
+            mkdir -p /var/www/app/docker
 
-            echo "🔄 Atualizando projeto..."
-            git pull origin main
+            echo "👉 Removendo conteúdo antigo"
+            rm -rf /var/www/app/docker/*
 
-            echo "🐳 Atualizando containers..."
-            docker compose pull
-            docker compose up -d --remove-orphans
+            echo "👉 Enviando pasta docker/"
+            upload "./docker/*" "/var/www/app/docker/"
 
-            echo "🧹 Limpando imagens antigas..."
-            docker image prune -af
+            echo "👉 Subindo containers"
+            cd /var/www/app/docker
+            docker compose down || true
+            docker compose up -d --build
+
+            echo "✅ Deploy finalizado!"
